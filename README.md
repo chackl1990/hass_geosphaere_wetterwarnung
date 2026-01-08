@@ -20,6 +20,8 @@ Custom Integration fuer Geosphere Austria (ZAMG) Wetterwarnungen in Oesterreich.
 <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=chackl1990&repository=hass_geosphaere_wetterwarnung" target="_blank">
     <img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="HACS Repository">
 </a>
+
+
 1. HACS > Integrations > Menu (drei Punkte) > Custom repositories
 2. Repository-URL einfuegen (dieses GitHub-Repo), Kategorie: Integration
 3. Integration "Geosphaere Wetterwarnung" installieren

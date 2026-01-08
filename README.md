@@ -5,6 +5,10 @@ Dieses Projekt wurde als reines Just-for-Fun-Projekt entwickelt. Es gibt keinerl
 # Geosphaere Wetterwarnung (Home Assistant)
 Custom Integration fuer Geosphere Austria (ZAMG) Wetterwarnungen in Oesterreich. Holt Warnungen per API fuer `zone.home` und optionale Zusatzkoordinaten, stellt Sensoren/Binary-Sensoren bereit und bietet Config-Flow sowie konfigurierbares Polling mit Grace-Handling.
 
+# Datenquelle
+Website: https://warnungen.zamg.at/
+API: https://warnungen.zamg.at/wsapp/api/getWarningsForCoords?lon=16.214837&lat=48.2203441&lang=de
+
 ## Features
 - Warnungen fuer `zone.home` und optional weitere Koordinaten
 - Binary Sensoren fuer Vorwarnung, aktuelle Warnung, API-Status und Warnungstypen

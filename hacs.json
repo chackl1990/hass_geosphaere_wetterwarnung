@@ -1,5 +1,5 @@
 {
-  "name": "geosphere Wetterwarnung",
+  "name": "GeoSphere Wetterwarnung",
   "content_in_root": false,
   "domains": [
     "binary_sensor",

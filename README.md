@@ -24,7 +24,7 @@ API Link Beispiel: https://warnungen.zamg.at/wsapp/api/getWarningsForCoords?lon=
 - Internetzugang zu `warnungen.zamg.at`
 
 ## Installation ueber HACS (Custom Repository)
-[![HACS Repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=chackl1990&repository=hass_Geosphere_wetterwarnung)
+[![HACS Repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=chackl1990&repository=hass_Geosphere_wetterwarnung&category=integration)
 
 1. HACS > Integrations > Menu (drei Punkte) > Custom repositories
 2. Repository-URL einfuegen (dieses GitHub-Repo), Kategorie: Integration

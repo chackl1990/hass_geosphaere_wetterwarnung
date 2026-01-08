@@ -1,4 +1,4 @@
-alias: Geosphere Wetterwarnung - Vorwarnung
+alias: GeoSphere Wetterwarnung - Vorwarnung
 description: ""
 triggers:
   - entity_id:
@@ -22,4 +22,5 @@ actions:
         }}
       title: Bevorstehende Wetterwarnung
 mode: single
+
 

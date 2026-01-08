@@ -1,7 +1,7 @@
 # Benoetigt: https://github.com/thomasloven/lovelace-card-mod
 
 type: entities
-title: Geosphäre Wetterwarnungen
+title: GeoSphere Wetterwarnungen
 card_mod_style:
   card_mod:
     style: |
@@ -9,70 +9,70 @@ card_mod_style:
         --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
       }
 entities:
-  - entity: binary_sensor.geosphare_wetterwarnungen_vorwarnung
+  - entity: binary_sensor.geosphere_wetterwarnungen_vorwarnung
     name: Vorwarnung
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: binary_sensor.geosphare_wetterwarnungen_warnung
+  - entity: binary_sensor.geosphere_wetterwarnungen_warnung
     name: Warnung
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: binary_sensor.geosphare_wetterwarnungen_warnung_api
+  - entity: binary_sensor.geosphere_wetterwarnungen_warnung_api
     name: Warnung API
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_wind_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_wind_warnungslevel
     name: Wind Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_regen_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_regen_warnungslevel
     name: Regen Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_schnee_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_schnee_warnungslevel
     name: Schnee Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_glatteis_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_glatteis_warnungslevel
     name: Glatteis Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_gewitter_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_gewitter_warnungslevel
     name: Gewitter Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_hitze_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_hitze_warnungslevel
     name: Hitze Warnungslevel
     card_mod:
       style: |
         :host {
           --card-mod-icon-color: {{ state_attr(config.entity, 'icon_color') | default('var(--state-icon-color)') }};
         }
-  - entity: sensor.geosphare_wetterwarnungen_kalte_warnungslevel
+  - entity: sensor.geosphere_wetterwarnungen_kalte_warnungslevel
     name: Kälte Warnungslevel
     card_mod:
       style: |

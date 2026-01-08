@@ -19,7 +19,7 @@
   "options": {
     "step": {
       "init": {
-        "title": "Geosphere Wetterwarnung Optionen",
+        "title": "GeoSphere Wetterwarnung Optionen",
         "description": "Optionen für Intervall, Zusatzkoordinaten und Warnung-Halte-Frist.",
         "data": {
           "scan_interval": "Scan-Intervall (Sekunden)",

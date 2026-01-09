@@ -1,4 +1,4 @@
-{
+﻿{
   "config": {
     "flow_title": "GeoSphere Wetterwarnung",
     "step": {
@@ -8,7 +8,7 @@
         "data": {
           "scan_interval": "Scan-Intervall (Sekunden)",
           "extra_coords": "Zusatzkoordinaten (lat,lon;lat,lon;...)",
-          "grace_period": "Warnung-Halte-Frist für Warnungswechsel (Sekunden)"
+          "grace_period": "Warnung-Halte-Frist nach Ende einer Warnung, bevor ein niedrigeres Level übernommen wird (Sekunden)"
         }
       }
     },
@@ -24,7 +24,7 @@
         "data": {
           "scan_interval": "Scan-Intervall (Sekunden)",
           "extra_coords": "Zusatzkoordinaten (lat,lon;lat,lon;...)",
-          "grace_period": "Warnung-Halte-Frist für Warnungswechsel (Sekunden)"
+          "grace_period": "Warnung-Halte-Frist nach Ende einer Warnung, bevor ein niedrigeres Level übernommen wird (Sekunden)"
         }
       }
     }

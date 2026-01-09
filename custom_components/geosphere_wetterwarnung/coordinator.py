@@ -1,6 +1,5 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
-import logging
 from datetime import timedelta
 from typing import List, Tuple
 
@@ -19,7 +18,12 @@ from .const import (
     DEFAULT_GRACE_PERIOD,
 )
 
-_LOGGER = logging.getLogger(__name__)
+class _NoopLogger:
+    def __getattr__(self, name):
+        return lambda *args, **kwargs: None
+
+
+_NOOP_LOGGER = _NoopLogger()
 
 
 def _parse_extra_coords(text: str) -> List[Tuple[float, float]]:
@@ -43,18 +47,51 @@ def _parse_extra_coords(text: str) -> List[Tuple[float, float]]:
     return coords
 
 
-def _has_active_warnings(warnings: list[dict], now_utc) -> bool:
-    now_ts = int(now_utc.timestamp())
-    for w in warnings:
-        raw = w.get("properties", {}).get("rawinfo", {})
-        try:
-            start = int(raw.get("start", 0))
-            end = int(raw.get("end", 0))
-        except (TypeError, ValueError):
-            continue
-        if start <= now_ts <= end:
-            return True
-    return False
+def _warning_key(warning: dict) -> str:
+    raw = warning.get("properties", {}).get("rawinfo", {})
+    for key in ("id", "awcode", "warnid", "wcode"):
+        val = raw.get(key)
+        if val:
+            return f"{key}:{val}"
+    return "|".join(
+        [
+            str(raw.get("wtype", "")),
+            str(raw.get("wlevel", "")),
+            str(raw.get("start", "")),
+            str(raw.get("end", "")),
+        ]
+    )
+
+
+def _get_end_ts(warning: dict) -> int:
+    raw = warning.get("properties", {}).get("rawinfo", {})
+    try:
+        return int(raw.get("end", 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _copy_with_end(warning: dict, new_end: int) -> dict:
+    props = dict(warning.get("properties", {}))
+    raw = dict(props.get("rawinfo", {}))
+    raw["end"] = new_end
+    props["rawinfo"] = raw
+    copy = dict(warning)
+    copy["properties"] = props
+    return copy
+
+
+def _extend_if_grace_applies(
+    warning: dict, now_ts: int, grace_seconds: int, allow_invalid_end: bool
+) -> dict | None:
+    end_ts = _get_end_ts(warning)
+    if end_ts <= 0:
+        return warning if allow_invalid_end else None
+    if now_ts <= end_ts:
+        return warning
+    if now_ts <= end_ts + grace_seconds:
+        return _copy_with_end(warning, end_ts + grace_seconds)
+    return None
 
 
 class geosphereCoordinator(DataUpdateCoordinator):
@@ -71,15 +108,14 @@ class geosphereCoordinator(DataUpdateCoordinator):
         self._last_successful_data: dict | None = None
         self._last_non_empty_data: dict | None = None
         self._last_non_empty_utc = None
-        self._last_active_data: dict | None = None
-        self._last_active_utc = None
+        self._warning_cache: dict[str, dict] = {}
         self.last_request_utc = None
 
         scan_interval = self._get_entry_value(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
         super().__init__(
             hass,
-            _LOGGER,
+            _NOOP_LOGGER,
             name=DOMAIN,
             update_interval=timedelta(seconds=scan_interval),
         )
@@ -90,7 +126,6 @@ class geosphereCoordinator(DataUpdateCoordinator):
         grace_seconds = self._get_entry_value(
             CONF_GRACE_PERIOD, DEFAULT_GRACE_PERIOD
         )
-        grace_delta = timedelta(seconds=grace_seconds)
 
         zone = self.hass.states.get("zone.home")
         if zone is None:
@@ -165,41 +200,51 @@ class geosphereCoordinator(DataUpdateCoordinator):
         self.last_http_response = "; ".join(error_messages) if error_messages else None
 
         if any_success:
-            result = {"properties": {"warnings": combined_warnings}}
+            now_ts = int(self.last_request_utc.timestamp())
+            current_keys: set[str] = set()
+            warnings_with_grace: list = []
+
+            for warning in combined_warnings:
+                key = _warning_key(warning)
+                current_keys.add(key)
+                self._warning_cache[key] = {
+                    "warning": warning,
+                    "last_seen_ts": now_ts,
+                }
+                extended = _extend_if_grace_applies(
+                    warning, now_ts, grace_seconds, allow_invalid_end=True
+                )
+                if extended is not None:
+                    warnings_with_grace.append(extended)
+
+            expired_keys: list[str] = []
+            for key, entry in self._warning_cache.items():
+                if key in current_keys:
+                    continue
+                cached = entry.get("warning", {})
+                last_seen_ts = entry.get("last_seen_ts", 0)
+                if grace_seconds <= 0 or not last_seen_ts:
+                    expired_keys.append(key)
+                    continue
+                if now_ts - last_seen_ts > grace_seconds:
+                    expired_keys.append(key)
+                    continue
+                extended = _extend_if_grace_applies(
+                    cached, now_ts, grace_seconds, allow_invalid_end=False
+                )
+                if extended is not None:
+                    warnings_with_grace.append(extended)
+                else:
+                    expired_keys.append(key)
+
+            for key in expired_keys:
+                self._warning_cache.pop(key, None)
+
+            result = {"properties": {"warnings": warnings_with_grace}}
             self._last_successful_data = result
-            if combined_warnings:
+            if warnings_with_grace:
                 self._last_non_empty_data = result
                 self._last_non_empty_utc = self.last_request_utc
-                has_active = _has_active_warnings(
-                    combined_warnings, self.last_request_utc
-                )
-                if has_active:
-                    self._last_active_data = result
-                    self._last_active_utc = self.last_request_utc
-                    return result
-
-                if (
-                    self._last_active_data is not None
-                    and self._last_active_utc is not None
-                ):
-                    age = self.last_request_utc - self._last_active_utc
-                    if age <= grace_delta:
-                        return self._last_active_data
-                return result
-
-            if (
-                self._last_active_data is not None and self._last_active_utc is not None
-            ):
-                age = self.last_request_utc - self._last_active_utc
-                if age <= grace_delta:
-                    return self._last_active_data
-            if (
-                self._last_non_empty_data is not None
-                and self._last_non_empty_utc is not None
-            ):
-                age = self.last_request_utc - self._last_non_empty_utc
-                if age <= grace_delta:
-                    return self._last_non_empty_data
             return result
 
         if self._last_successful_data is not None:

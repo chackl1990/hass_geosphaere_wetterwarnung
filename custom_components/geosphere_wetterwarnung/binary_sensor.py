@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-import logging
 from typing import Any, Dict, List
 
 from homeassistant.components.binary_sensor import (
@@ -29,7 +28,6 @@ from .const import (
 )
 from .coordinator import geosphereCoordinator
 
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -283,23 +281,6 @@ class CurrentSummaryBinarySensor(CoordinatorEntity, BinarySensorEntity):
         grouped = _group_by_type_with_max_level(active)
         is_on = len(active) > 0
         level = max((info["level"] for info in grouped.values()), default=0)
-
-        if (
-            self._last_is_on is not None
-            and self._last_level is not None
-            and (is_on != self._last_is_on or level != self._last_level)
-        ):
-            _LOGGER.info(
-                "Summenwarnung geaendert: on=%s (vorher=%s) level=%s (vorher=%s). "
-                "HTTP=%s response=%s data=%s",
-                is_on,
-                self._last_is_on,
-                level,
-                self._last_level,
-                self.coordinator.last_http_status,
-                self.coordinator.last_http_response,
-                data,
-            )
 
         self._last_is_on = is_on
         self._last_level = level
